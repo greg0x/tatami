@@ -230,6 +230,7 @@ pub const Coverage = struct {
     main_moved: u32 = 0,
     disorder: u32 = 0,
     stale: u32 = 0,
+    stacked: u32 = 0,
 };
 
 pub const Simulator = struct {
@@ -1668,6 +1669,7 @@ pub const Simulator = struct {
             if (engine.workspaces[known.workspace].accordion) {
                 const shown_on = engine.workspace_monitor(known.workspace);
                 assert(frame.eql(engine.workspace_rect(shown_on)));
+                simulator.coverage.stacked += 1;
                 continue;
             }
             for (simulator.windows[0..index]) |*other| {

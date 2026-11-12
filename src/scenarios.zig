@@ -200,8 +200,8 @@ test "a zoomed window stays zoomed when another window takes focus" {
 }
 
 test "an accordion stacks the tiles and focus steps through them in layout order" {
-    // AeroSpace's accordion layout: many chat windows on one workspace, each at full size,
-    // one key to go through them.
+    // Asked for: 'many overlapping windows and I can scroll through them with a key
+    // combination', as with AeroSpace's accordion layout.
     const os = boot("");
     const app = os.app_launch("Slack", "com.tinyspeck.slackmacgap");
     const a = open(os, app, .{});
@@ -243,7 +243,7 @@ test "an accordion stacks the tiles and focus steps through them in layout order
 }
 
 test "focus --wrap goes around an accordion even with a monitor that way" {
-    // Live: with a display below the main one, hyper-j (focus south --wrap) stopped at the
+    // Seen live: with a display below the main one, hyper-j (focus south --wrap) stopped at the
     // last chat window and then went to the browser on the other display.
     const os = boot("");
     os.monitors_set(4); // The external display above, the laptop below it.
