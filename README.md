@@ -101,8 +101,8 @@ is rejected, so a key press can never strand you in one.
 
 `toggle accordion` stacks every tile of the workspace at full size, as AeroSpace's
 accordion layout does. Focus, swap and warp then step through the stack in layout order:
-west and north go back, east and south go on, and `--wrap` goes around the stack, never to
-another display. The mouse and resize leave the layout underneath alone, so toggled again
+west and north go back, east and south go on, and from a tile of the stack `--wrap` goes
+around it, never to another display. The mouse and resize leave the layout underneath alone, so toggled again
 the tiles come back where they were, in their new order. `focus next` also reaches the
 floating windows.
 

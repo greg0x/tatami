@@ -3560,9 +3560,10 @@ pub const Engine = struct {
                 const mark: u8 = if (current) '*' else ' ';
                 const shown = if (visible) "visible" else "hidden";
                 const name = if (label.len > 0) label else "-";
-                const layout = if (engine.workspaces[workspace].accordion) "accordion" else "bsp";
-                text.print("{c}{d}\tmonitor={d}\t{s}\twindows={d}\t{s}\t{s}\n", .{
-                    mark, workspace + 1, monitor, shown, count, layout, name,
+                // After the label, so that the columns before it stay where they were.
+                const accordion = if (engine.workspaces[workspace].accordion) "\taccordion" else "";
+                text.print("{c}{d}\tmonitor={d}\t{s}\twindows={d}\t{s}{s}\n", .{
+                    mark, workspace + 1, monitor, shown, count, name, accordion,
                 });
             }
             listed += 1;

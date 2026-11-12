@@ -216,7 +216,7 @@ test "an accordion stacks the tiles and focus steps through them in layout order
     try testing.expectEqual(wide, engine.focused_window);
     const tree_text = run(os, "query tree", .{});
     try testing.expect(std.mem.indexOf(u8, tree_text, "workspace 1 visible accordion\n") != null);
-    const line = "*1\tmonitor=1\tvisible\twindows=4\taccordion\t-\n";
+    const line = "*1\tmonitor=1\tvisible\twindows=4\t-\taccordion\n";
     try expect_reply(line, run(os, "query workspaces", .{}));
     const listed = run(os, "query workspaces --json", .{});
     try testing.expect(std.mem.indexOf(u8, listed, "\"accordion\":true") != null);
