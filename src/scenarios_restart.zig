@@ -373,6 +373,7 @@ fn expect_same_desk(a: *Engine, b: *Engine) !void {
             });
         }
         if (one.gaps_toggled != two.gaps_toggled) return differ("gaps of {d}", .{number});
+        if (one.accordion != two.accordion) return differ("accordion of {d}", .{number});
         if (!std.mem.eql(u8, one.label.slice(), two.label.slice())) {
             return differ("workspace {d} was labelled '{s}', now '{s}'", .{
                 number, one.label.slice(), two.label.slice(),
@@ -1107,8 +1108,8 @@ test "a file that is cut short is believed as far as it goes" {
     file_len = header + std.mem.indexOfScalar(u8, file[header..file_len], '\n').? + 1;
     // The workspaces come first in it; without them, the windows are still believed.
     const line = file[header..file_len];
-    std.mem.copyForwards(u8, file["tatami-state 2\n".len..], line);
-    file_len = "tatami-state 2\n".len + line.len;
+    std.mem.copyForwards(u8, file["tatami-state 3\n".len..], line);
+    file_len = "tatami-state 3\n".len + line.len;
     start(os, &second, .{});
     try testing.expectEqual(@as(u32, 1), left.windows_count);
     try testing.expectEqual(a, left.windows[0].id);

@@ -218,7 +218,7 @@ const commands = [_][]const u8{
     "query window",                     "query window 101 --json",    "query bindings --json",
     "query workspaces --json",          "query monitors --json",      "query focus --json",
     "query stats --json",               "query commands",             "query modes --json",
-    "float --bounds 0.25,0.25,0.5,0.5",
+    "float --bounds 0.25,0.25,0.5,0.5", "toggle accordion",
 };
 
 pub const Coverage = struct {
@@ -1664,6 +1664,12 @@ pub const Simulator = struct {
             const frame = window.frame;
             assert(frame.x >= area.x and frame.right() <= area.right());
             assert(frame.y >= area.y and frame.bottom() <= area.bottom());
+            // The tiles of an accordion are stacked: each one fills the workspace.
+            if (engine.workspaces[known.workspace].accordion) {
+                const shown_on = engine.workspace_monitor(known.workspace);
+                assert(frame.eql(engine.workspace_rect(shown_on)));
+                continue;
+            }
             for (simulator.windows[0..index]) |*other| {
                 const beside = engine.window_find(other.id) orelse continue;
                 if (beside.workspace != known.workspace) continue;

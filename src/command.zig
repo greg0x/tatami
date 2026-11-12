@@ -86,7 +86,7 @@ pub const QueryRequest = struct {
     window: WindowRef = .focused,
 };
 
-pub const Toggle = enum { split, float, zoom_parent, zoom_fullscreen, sticky, gaps };
+pub const Toggle = enum { split, float, zoom_parent, zoom_fullscreen, sticky, gaps, accordion };
 pub const MirrorAxis = enum { x_axis, y_axis };
 pub const Dimension = enum { width, height };
 pub const Layout = enum { bsp, float };
@@ -697,8 +697,8 @@ pub const reference = [_]Entry{
     .{ .syntax = "rotate 90|180|270", .summary = "rotate the layout" },
     .{ .syntax = "mirror x-axis|y-axis", .summary = "flip the layout" },
     .{
-        .syntax = "toggle split|float|zoom-parent|zoom-fullscreen|sticky|gaps",
-        .summary = "switch one of these",
+        .syntax = "toggle split|float|zoom-parent|zoom-fullscreen|sticky|gaps|accordion",
+        .summary = "switch one of these; accordion stacks the workspace's tiles",
     },
     .{ .syntax = "zoom [<window>] [--on|--off]", .summary = "fill the workspace with a window" },
     .{
@@ -770,6 +770,7 @@ test "parse commands" {
         Command{ .toggle = .zoom_fullscreen },
         try parse("toggle zoom-fullscreen", &pool),
     );
+    try testing.expectEqual(Command{ .toggle = .accordion }, try parse("toggle accordion", &pool));
     try testing.expectEqual(
         Command{ .workspace = .{ .index = 10 } },
         try parse("workspace 10", &pool),

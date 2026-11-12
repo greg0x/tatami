@@ -99,6 +99,11 @@ CLI). The default has AeroSpace's service mode on option-shift-; with esc, backs
 (close the other windows), f (float) and r (retile). A mode with no binding that leaves it
 is rejected, so a key press can never strand you in one.
 
+`toggle accordion` stacks every tile of the workspace at full size, as AeroSpace's
+accordion layout does. Focus and swap then step through the stack in layout order: west and
+north go back, east and south go on, and `--wrap` goes around. Toggled again, the tiles
+come back where they were.
+
 Commands can name the windows they act on, by the id that `query windows` prints or by
 a label: `swap 186 logs`, `move logs right editor --ratio 30`, `zoom editor --on`,
 `float 186 --bounds 0.25,0.25,0.5,0.5`. This part of the command line is modelled on
