@@ -724,6 +724,63 @@ test "a tile dropped on a monitor that shows a zoomed window joins the layout un
     try expect_frame(Rect.init(1728, 739, 1280, 701), a);
 }
 
+test "in an accordion the mouse, warp and resize leave the hidden layout as it was" {
+    const os = boot("");
+    const zed = launch(os, "Zed", "dev.zed.Zed");
+    const a = open(os, zed, .{});
+    const b = open(os, zed, .{});
+    const c = open(os, zed, .{});
+    os.settle();
+    os.command_run("toggle accordion");
+    os.settle();
+    try expect_frame(screen, c);
+    // Dropped where a's hidden cell is: nothing trades places, and c snaps back.
+    var drop = frame_of(c);
+    drop.x = -600;
+    drop.y = 100;
+    os.window_drag(c, drop);
+    os.settle();
+    try expect_frame(screen, c);
+    // An edge dragged, and resized by command: a stacked window has no size of its own.
+    os.window_drag(c, Rect.init(300, 38, 1428, 1079));
+    os.settle();
+    try expect_frame(screen, c);
+    os.command_run("resize left -100");
+    os.command_run("resize ratio 30");
+    // warp has no side to go to in a stack: it trades places along it, as swap does.
+    os.command_run("warp north");
+    os.settle();
+    try expect_frame(screen, c);
+    os.command_run("toggle accordion");
+    os.settle();
+    try expect_frame(left_half, a);
+    try expect_frame(Rect.init(864, 38, 864, 540), c);
+    try expect_frame(Rect.init(864, 578, 864, 539), b);
+}
+
+test "from a floating window an accordion is one place, and focus goes to the tile on top" {
+    const os = boot("");
+    const zed = launch(os, "Zed", "dev.zed.Zed");
+    const a = open(os, zed, .{});
+    const b = open(os, zed, .{});
+    const c = open(os, zed, .{});
+    os.settle();
+    os.command_run("toggle accordion");
+    _ = run(os, "focus {d}", .{a});
+    _ = run(os, "float {d} --bounds 0.75,0.25,0.25,0.5", .{c});
+    os.settle();
+    _ = run(os, "focus {d}", .{c});
+    // b's hidden cell is nearer, but every tile is where the stack is, and a is on top.
+    os.command_run("focus west");
+    try testing.expectEqual(a, engine.focused_window);
+    // From a tile the stack goes on to its other tiles; the floating window comes in the
+    // layout order of focus next.
+    os.command_run("focus east --wrap");
+    try testing.expectEqual(b, engine.focused_window);
+    os.command_run("focus next");
+    try testing.expectEqual(c, engine.focused_window);
+}
+
 test "a tile with tabs dropped on an empty monitor takes its tabs along" {
     const os = boot("");
     os.monitors_set(1);

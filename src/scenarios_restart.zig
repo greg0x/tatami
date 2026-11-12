@@ -663,7 +663,7 @@ test "a window that fought the layout and was left floating is not fought again"
     try expect_frame(screen, calm);
 }
 
-test "sticky windows, zoom, labels and toggled gaps come back as they were" {
+test "sticky windows, zoom, labels, toggled gaps and an accordion come back as they were" {
     const os = desk("");
     const app = os.app_launch("Zed", "dev.zed.Zed");
     const a = open(os, app, .{});
@@ -673,6 +673,7 @@ test "sticky windows, zoom, labels and toggled gaps come back as they were" {
     os.command_run("label logs");
     os.command_run("label-workspace code");
     os.command_run("toggle gaps");
+    os.command_run("toggle accordion");
     os.command_run("toggle sticky");
     run(os, "zoom {d} --on", .{a});
     os.settle();
@@ -681,6 +682,7 @@ test "sticky windows, zoom, labels and toggled gaps come back as they were" {
     try testing.expectEqualStrings("logs", known(c).label.slice());
     try testing.expectEqualStrings("code", second.workspaces[0].label.slice());
     try testing.expect(second.workspaces[0].gaps_toggled);
+    try testing.expect(second.workspaces[0].accordion);
     try testing.expect(known(c).sticky);
     try testing.expectEqual(engine_module.Zoom.fullscreen, known(a).zoom);
     try testing.expectEqual(engine_module.Zoom.none, known(b).zoom);
@@ -1027,6 +1029,7 @@ fn garbage(prng: *stdx.Prng, os: *sim.Simulator, state: *State) void {
             .focused = prng.chance(1, 3),
             .recent = prng.chance(1, 3),
             .gaps = prng.chance(1, 3),
+            .accordion = prng.chance(1, 3),
             .label = garbage_label(prng),
         };
     }

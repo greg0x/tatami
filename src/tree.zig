@@ -190,6 +190,22 @@ pub const Forest = struct {
         return current;
     }
 
+    /// The leaf before this one in preorder, or node_none for the first.
+    pub fn leaf_prev(forest: *const Forest, root: NodeIndex, leaf: NodeIndex) NodeIndex {
+        assert(forest.is_leaf(leaf));
+        var current = leaf;
+        var steps: u32 = 0;
+        while (current != root) : (steps += 1) {
+            assert(steps < nodes_max);
+            const parent = forest.nodes[current].parent;
+            assert(parent != node_none);
+            const node = &forest.nodes[parent];
+            if (node.second == current) return forest.leaf_last(node.first);
+            current = parent;
+        }
+        return node_none;
+    }
+
     pub fn leaf_count(forest: *const Forest, root: NodeIndex) u32 {
         var count: u32 = 0;
         var leaf = forest.leaf_first(root);
@@ -605,6 +621,10 @@ test "the smallest subtree that holds two windows" {
     try testing.expectEqual(forest.nodes[two].parent, forest.ancestor_common(three, two));
     try testing.expectEqual(root, forest.ancestor_common(one, three));
     try testing.expectEqual(root, forest.ancestor_common(root, three));
+    try testing.expectEqual(two, forest.leaf_prev(root, three));
+    try testing.expectEqual(one, forest.leaf_prev(root, two));
+    try testing.expectEqual(node_none, forest.leaf_prev(root, one));
+    try testing.expectEqual(three, forest.leaf_next(root, two));
 }
 
 test "gaps, placement by side, rotate and mirror" {

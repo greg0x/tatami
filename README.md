@@ -100,9 +100,11 @@ CLI). The default has AeroSpace's service mode on option-shift-; with esc, backs
 is rejected, so a key press can never strand you in one.
 
 `toggle accordion` stacks every tile of the workspace at full size, as AeroSpace's
-accordion layout does. Focus and swap then step through the stack in layout order: west and
-north go back, east and south go on, and `--wrap` goes around. Toggled again, the tiles
-come back where they were.
+accordion layout does. Focus, swap and warp then step through the stack in layout order:
+west and north go back, east and south go on, and `--wrap` goes around the stack, never to
+another display. The mouse and resize leave the layout underneath alone, so toggled again
+the tiles come back where they were, in their new order. `focus next` also reaches the
+floating windows.
 
 Commands can name the windows they act on, by the id that `query windows` prints or by
 a label: `swap 186 logs`, `move logs right editor --ratio 30`, `zoom editor --on`,

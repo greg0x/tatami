@@ -1646,7 +1646,11 @@ pub const Simulator = struct {
         if (!simulator.engine.workspace_visible(known.workspace)) return false;
         if (known.frozen or window.stubborn) return false;
         // A tile that the gaps squeeze to nothing is still sent a frame one pixel wide,
-        // and that pixel lies on its neighbour.
+        // and that pixel lies on its neighbour. The tiles of an accordion fill the
+        // workspace whatever the hidden layout gives them.
+        if (simulator.engine.workspaces[known.workspace].accordion) {
+            return window.frame.eql(known.desired);
+        }
         const forest = &simulator.engine.forest;
         const rect = forest.nodes[forest.leaf_find(known.id)].rect;
         if (rect.w == 0 or rect.h == 0) return false;
@@ -1654,7 +1658,7 @@ pub const Simulator = struct {
     }
 
     /// The tiles of a workspace that shows lie inside the visible area of its display
-    /// and do not overlap each other.
+    /// and do not overlap each other, or, in an accordion, each one fills the workspace.
     fn check_tiles(simulator: *Simulator) void {
         const engine = simulator.engine;
         if (engine.monitors_count == 0) return;

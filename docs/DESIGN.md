@@ -33,7 +33,10 @@ workspace in use, the layout's revision). The shell passes them on to whoever fo
 each step, so no code path can change the layout without it counting.
 
 Layout is a binary space partition per workspace, kept in one static pool of nodes
-(`tree.zig`). Tree walks are iterative; nothing recurses.
+(`tree.zig`). Tree walks are iterative; nothing recurses. A workspace can show its tree as
+an accordion: every tile at full size, the tree kept as it is underneath. A stacked tile
+then has an order and no place or size of its own, so directions step along the stack and
+the mouse and resize leave the tree alone.
 
 The rules that make it behave:
 
@@ -83,7 +86,7 @@ Static, checked by assertions, and reported in `tatami query stats` when hit.
 | Mouse | The button state is polled every 30 ms only while a window is being dragged, to tell a drag in progress from a finished one. A button held while the pointer is somewhere else is not a drag of this window. |
 | Secure Input (`IsSecureEventInputEnabled`) | Read at startup, at every application switch, at unlock and by `tatami check`, with the process that holds it. While it is held, option-only hot keys cannot fire; the log and `tatami events` say when it starts and ends. |
 | Unix socket `/tmp/tatami-<uid>.sock` | One line in, one reply out. The client gives up after 2 s; the server reads with a 100 ms timeout. `exec` is refused over the socket. A manager that finds another one answering on the socket does not start: two would fight over every window. |
-| State file `/tmp/tatami-<uid>.state` | Everything a user can see of the engine's state, one line per workspace and per window ([src/state.zig](../src/state.zig)): the display of each workspace and which ones show, and for each window its workspace, its place in the layout with the split and ratio, whether it floats and where, sticky, zoom, label, tab and focus order. Written two seconds after the layout changed and at quit, replaced in one step. The next start reads it before it looks at the windows, so a restart, an upgrade or a crash changes nothing: no window that was in view is sent a frame. A window is matched by id and process; lines that make no sense are skipped and the engine checks the rest, so a file from before a reboot, or from someone else, does no harm. |
+| State file `/tmp/tatami-<uid>.state` | Everything a user can see of the engine's state, one line per workspace and per window ([src/state.zig](../src/state.zig)): the display of each workspace, which ones show and which are accordions, and for each window its workspace, its place in the layout with the split and ratio, whether it floats and where, sticky, zoom, label, tab and focus order. Written two seconds after the layout changed and at quit, replaced in one step. The next start reads it before it looks at the windows, so a restart, an upgrade or a crash changes nothing: no window that was in view is sent a frame. A window is matched by id and process; lines that make no sense are skipped and the engine checks the rest, so a file from before a reboot, or from someone else, does no harm. |
 | Signals | SIGINT and SIGTERM restore parked windows and quit. On a fatal signal the process replaces itself with `tatami rescue`. |
 
 ## The simulator
@@ -118,7 +121,7 @@ After every quiet moment it asserts:
   displays no more than the best of the four parking spots would show: nothing, wherever
   a corner is free.
 - The tiles of a workspace that shows lie inside the visible area of its display and do
-  not overlap.
+  not overlap, or, in an accordion, each one fills the workspace.
 - Every window that tiles has exactly one leaf, in the tree of its own workspace; a
   window that is minimized, hidden with its application, in native fullscreen, floating
   or a background tab has none.
