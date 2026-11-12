@@ -242,6 +242,40 @@ test "an accordion stacks the tiles and focus steps through them in layout order
     try testing.expect(!frame_of(b).eql(screen));
 }
 
+test "focus --wrap goes around an accordion even with a monitor that way" {
+    // Live: with a display below the main one, hyper-j (focus south --wrap) stopped at the
+    // last chat window and then went to the browser on the other display.
+    const os = boot("");
+    os.monitors_set(4); // The external display above, the laptop below it.
+    const laptop = engine.focused_monitor;
+    try testing.expect(engine.monitors[laptop].main);
+    const app = os.app_launch("Slack", "com.tinyspeck.slackmacgap");
+    const a = open(os, app, .{});
+    const b = open(os, app, .{});
+    const c = open(os, app, .{});
+    os.settle();
+    os.command_run("toggle accordion");
+    os.settle();
+    try testing.expectEqual(c, engine.focused_window);
+    os.command_run("focus south --wrap");
+    try testing.expectEqual(a, engine.focused_window);
+    os.command_run("focus north --wrap");
+    try testing.expectEqual(c, engine.focused_window);
+    os.command_run("focus north");
+    os.command_run("focus north");
+    try testing.expectEqual(a, engine.focused_window);
+    os.command_run("focus north --wrap");
+    try testing.expectEqual(c, engine.focused_window);
+    try testing.expectEqual(laptop, engine.focused_monitor);
+    // Without --wrap the end of the stack is an edge like any other, and the display
+    // above is that way.
+    os.command_run("focus north");
+    os.command_run("focus north");
+    os.command_run("focus north");
+    try testing.expect(engine.focused_monitor != laptop);
+    _ = b;
+}
+
 test "a hung application delays only its own windows" {
     // AeroSpace: 'restart aerospace it is very slow', and a CLI that hangs with it.
     const os = boot("");

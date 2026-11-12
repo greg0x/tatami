@@ -2647,12 +2647,15 @@ pub const Engine = struct {
         engine.workspace_focus(window.workspace);
     }
 
-    /// With nothing that way, focus goes around to the far end of the other side.
+    /// With nothing that way, focus goes around to the far end of the other side. In an
+    /// accordion it goes around the stack, also when a monitor lies that way: the stack is
+    /// one place on the screen, and going through it is a cycle.
     fn command_focus_wrap(engine: *Engine, direction: Direction) void {
         const window = engine.focused() orelse return engine.command_focus(direction);
         const from = engine.workspace_monitor(window.workspace);
+        const stacked = engine.workspaces[window.workspace].accordion and window.in_layout();
         const onward = engine.neighbor(window, direction, false) != null or
-            engine.monitor_neighbor(from, direction) != null;
+            (!stacked and engine.monitor_neighbor(from, direction) != null);
         if (onward) return engine.command_focus(direction);
         var target = window;
         var steps: u32 = 0;
